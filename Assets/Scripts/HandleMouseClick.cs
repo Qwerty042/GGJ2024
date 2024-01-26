@@ -46,12 +46,14 @@ public class HandleMouseClick : MonoBehaviour
         }
         else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 0) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
         {
-            GameManager.boardState[gridPosition.y, gridPosition.x] = 1;
-            GameManager.boardState[GameManager.currentGridPosition.y, GameManager.currentGridPosition.x] = 0;
-            Debug.Log("Character moved");
-            gameManager.UpdateGrid();
-
-            GameManager.gameState = "ENEMY TURN";
+            if (Mathf.Abs(GameManager.currentGridPosition.y - gridPosition.y) <= 2f && Mathf.Abs(GameManager.currentGridPosition.x - gridPosition.x) <= 2f)
+            {
+                GameManager.boardState[gridPosition.y, gridPosition.x] = 1;
+                GameManager.boardState[GameManager.currentGridPosition.y, GameManager.currentGridPosition.x] = 0;
+                Debug.Log("Character moved");
+                gameManager.UpdateGrid();
+                GameManager.gameState = "ENEMY TURN";
+            }
             
             
         }
