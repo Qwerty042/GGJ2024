@@ -103,7 +103,7 @@ public class GameManager : MonoBehaviour
         }
 
 
-            UpdateGrid();
+        UpdateGrid();
         enemyTurnDelay = 0;
         gameState = "PLAYER TURN NO CHARACTER SELECTED";
     }

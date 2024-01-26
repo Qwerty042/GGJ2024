@@ -7,6 +7,7 @@ public class HandleMouseClick : MonoBehaviour
 {
     public Tilemap tilemap;
     public GameManager gameManager;
+    public BoardManager boardManager;
 
     void Update()
     {
@@ -16,6 +17,22 @@ public class HandleMouseClick : MonoBehaviour
             // Handle the click
             HandleMouseClickMethod();
         }
+    }
+
+    List<Vector2Int> GetValidTiles(Vector2Int gridPosition)
+    {
+        List<Vector2Int> validTiles = new List<Vector2Int>();
+        for (int i = 0; i < GameManager.boardState.GetLength(0); i++)
+        {
+            for (int j = 0; j < GameManager.boardState.GetLength(1); j++)
+            {
+                if (((GameManager.boardState[j, i] == 0) && (Mathf.Abs(j - gridPosition.y) <= 2f && Mathf.Abs(i - gridPosition.x) <= 2f)))
+                {
+                    validTiles.Add(new Vector2Int(i, j));
+                }
+            }
+        }
+        return validTiles;
     }
 
     void HandleMouseClickMethod()
@@ -36,12 +53,18 @@ public class HandleMouseClick : MonoBehaviour
         {
             GameManager.gameState = "PLAYER TURN CHARACTER SELECTED";
             GameManager.currentGridPosition = gridPosition;
+            boardManager.SelectTile(gridPosition);
+            List<Vector2Int> validTiles = GetValidTiles(gridPosition);
+            boardManager.ValidTiles(validTiles);
             Debug.Log("Character selected");
             
         }
         else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 1) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
         {
             GameManager.currentGridPosition = gridPosition;
+            boardManager.SelectTile(gridPosition);
+            List<Vector2Int> validTiles = GetValidTiles(gridPosition);
+            boardManager.ValidTiles(validTiles);
             Debug.Log("Character reselected");
         }
         else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 0) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
@@ -50,6 +73,7 @@ public class HandleMouseClick : MonoBehaviour
             {
                 GameManager.boardState[gridPosition.y, gridPosition.x] = 1;
                 GameManager.boardState[GameManager.currentGridPosition.y, GameManager.currentGridPosition.x] = 0;
+                boardManager.Deselect();
                 Debug.Log("Character moved");
                 gameManager.UpdateGrid();
                 GameManager.movesRemaining -= 1;
