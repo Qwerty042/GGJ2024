@@ -7,14 +7,9 @@ public class GameManager : MonoBehaviour
 {
     public GameObject clownPrefab;
     public GameObject soldierPrefab;
-    public GameObject redTilePrefab;
-    public GameObject greenTilePrefab;
-    public GameObject yellowTilePrefab;
-    public GameObject slightRedTilePrefab;
     public static Vector2Int currentGridPosition;
     public List<GameObject> clowns = new List<GameObject>();
     public List<GameObject> soldiers = new List<GameObject>();
-    public List<GameObject> extraTiles = new List<GameObject>();
     public int enemyTurnDelay;
 
     public static int[,] boardState = new int[,]
@@ -28,7 +23,7 @@ public class GameManager : MonoBehaviour
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
-        {1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
+        {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
         {1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2},
@@ -98,13 +93,6 @@ public class GameManager : MonoBehaviour
                     newSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -100f);
                     soldiers.Add(newSoldier);
                 }
-
-                if (boardState[i,j] == 3)
-                {
-                    GameObject newSlightRedTile = Instantiate(slightRedTilePrefab, spawnPosition, Quaternion.identity);
-                    newSlightRedTile.GetComponent<SpriteRenderer>().sortingOrder = -32768 + 1;
-                    extraTiles.Add(newSlightRedTile);
-                }
             }
         }
     }
@@ -132,19 +120,6 @@ public class GameManager : MonoBehaviour
 
         // Clear the list after destroying all soliders
         soldiers.Clear();
-
-    }
-
-    public void DestroyAllExtraTiles()
-    {
-        // Iterate through the list and destroy each tile
-        foreach (GameObject tile in extraTiles)
-        {
-            Destroy(tile);
-        }
-
-        // Clear the list after destroying all tiles
-        extraTiles.Clear();
 
     }
 

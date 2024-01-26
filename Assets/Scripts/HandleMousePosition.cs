@@ -7,6 +7,7 @@ public class HandleMouseover : MonoBehaviour
 {
     public Tilemap tilemap;
     public TileBase newTile;
+    public BoardManager boardManager;
 
     private void Update()
     {
@@ -23,7 +24,7 @@ public class HandleMouseover : MonoBehaviour
             cellPosition.x + 5,
             14 - cellPosition.y
             );
-
+        boardManager.MouseoverPosition(gridPosition);
         Debug.Log("Cell Position: " + cellPosition);
         Debug.Log("Grid Position: " + gridPosition);
     }
