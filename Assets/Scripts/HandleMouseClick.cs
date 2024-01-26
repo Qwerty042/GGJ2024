@@ -52,7 +52,16 @@ public class HandleMouseClick : MonoBehaviour
                 GameManager.boardState[GameManager.currentGridPosition.y, GameManager.currentGridPosition.x] = 0;
                 Debug.Log("Character moved");
                 gameManager.UpdateGrid();
-                GameManager.gameState = "ENEMY TURN";
+                GameManager.movesRemaining -= 1;
+                GameManager.gameState = "PLAYER TURN NO CHARACTER SELECTED";
+
+                if (GameManager.movesRemaining <= 0)
+                {
+                    GameManager.score += ClownCounter.CountClownsAlive() * 100;
+                    GameManager.gameState = "ENEMY TURN";
+                    GameManager.movesRemaining = 3;
+                }
+                
             }
             
             

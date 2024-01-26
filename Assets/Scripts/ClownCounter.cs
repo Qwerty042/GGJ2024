@@ -23,7 +23,7 @@ public class ClownCounter : MonoBehaviour
         clownsAliveText.text = "Clowns Alive: " + clownsAliveCount + "/10";
     }
 
-    int CountClownsAlive()
+    public static int CountClownsAlive()
     {
         int clownsAliveCount = 0;
 
