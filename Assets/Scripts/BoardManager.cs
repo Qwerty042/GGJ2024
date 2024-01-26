@@ -28,7 +28,7 @@ public class BoardManager : MonoBehaviour
         DestroyAllSpecialTiles();
         if (isMouseOverBoard)
         {
-            CreateTileAtBoardPosition(mouseoverTilePrefab, mouseoverTile);
+            CreateTileAtBoardPosition(mouseoverTilePrefab, mouseoverTile, 1);
         }
 
         if (isSelected)
@@ -80,14 +80,14 @@ public class BoardManager : MonoBehaviour
         specialTiles.Clear();
     }
 
-    private void CreateTileAtBoardPosition(GameObject tileType, Vector2Int boardPosition)
+    private void CreateTileAtBoardPosition(GameObject tileType, Vector2Int boardPosition, int sortingOrderModifier = 0)
     {
         float newX = -15.2f + (15.2f / 19f) * ((boardPosition.y + 1) + (boardPosition.x - 1));
         float newY = 0.7f + (7.6f / 19f) * (boardPosition.x - 1) - (7.6f / 19f) * (boardPosition.y + 1);
         Vector3 spawnPosition = new Vector3(newX, newY, 0f);
 
         GameObject newSpecialTile = Instantiate(tileType, spawnPosition, Quaternion.identity);
-        newSpecialTile.GetComponent<SpriteRenderer>().sortingOrder = -32768 + 1; // one level above the normal board tiles
+        newSpecialTile.GetComponent<SpriteRenderer>().sortingOrder = -32768 + 1 + sortingOrderModifier; // at least one level above the normal board tiles
         specialTiles.Add(newSpecialTile);
     }
 }
