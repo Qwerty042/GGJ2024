@@ -37,6 +37,8 @@ public class GameManager : MonoBehaviour
     };
 
     public static string gameState = "PLAYER TURN NO CHARACTER SELECTED";
+    public static int movesRemaining = 3;
+    public static int score = 0;
 
     void Start()
     {
@@ -48,23 +50,139 @@ public class GameManager : MonoBehaviour
         {
             enemyTurnDelay += 1;
 
-            if (enemyTurnDelay == 1000)
+            if (enemyTurnDelay == 400)
             {
-                EnemyMove();
+                EnemyTurn();
             }
         }
     }
 
-    void EnemyMove()
+
+
+
+    int SoldiersCount()
     {
+        int soldiersAliveCount = 0;
+
+        // Iterate through the boardState to count '1's
+        for (int i = 0; i < GameManager.boardState.GetLength(0); i++)
+        {
+            for (int j = 0; j < GameManager.boardState.GetLength(1); j++)
+            {
+                if (GameManager.boardState[i, j] == 2)
+                {
+                    soldiersAliveCount++;
+                }
+            }
+        }
+
+        return soldiersAliveCount;
+    }
+
+    void EnemyTurn()
+    {
+
         Debug.Log("Enemy move made");
-        Vector2 randomEnemy = GetRandomPositionOfValue(2);
-        boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
-        boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
-        
-        UpdateGrid();
+        int numberSoldiersToMove = SoldiersCount() / 3;
+        for (int i = 0; i < numberSoldiersToMove; i++)
+        {
+            MoveOneEnemy();
+        }
+
+        if (Random.value < 0.7f)
+        {
+            SpawnNewEnemy();
+        }
+        if (Random.value < 0.5f)
+        {
+            SpawnNewEnemy();
+        }
+        if (Random.value < 0.2f)
+        {
+            SpawnNewEnemy();
+        }
+
+
+            UpdateGrid();
         enemyTurnDelay = 0;
         gameState = "PLAYER TURN NO CHARACTER SELECTED";
+    }
+
+    void SpawnNewEnemy()
+    {
+        int columns = boardState.GetLength(1);
+
+        // Check if anything in the rightmost column is 0
+        bool hasEmptySpace = false;
+        for (int i = 0; i < boardState.GetLength(0); i++)
+        {
+            if (boardState[i, columns - 1] == 0)
+            {
+                hasEmptySpace = true;
+                break;
+            }
+        }
+
+        // If there is an empty space, randomly set one of them to 2
+        if (hasEmptySpace)
+        {
+            // Find all available empty spaces in the rightmost column
+            List<int> emptyIndices = new List<int>();
+            for (int i = 0; i < boardState.GetLength(0); i++)
+            {
+                if (boardState[i, columns - 1] == 0)
+                {
+                    emptyIndices.Add(i);
+                    
+                }
+            }
+            // Convert the list to an array of strings
+            string[] indexStrings = emptyIndices.ConvertAll(i => i.ToString()).ToArray();
+
+            // Use string.Join to concatenate the elements with a separator (e.g., ", ")
+            string result = string.Join(", ", indexStrings);
+            Debug.Log(result);
+
+            // Randomly select one of the empty spaces
+            int randomIndex = Random.Range(0, emptyIndices.Count);
+            int rowIndex = emptyIndices[randomIndex];
+
+            // Set the randomly selected space to 2
+            boardState[rowIndex, columns - 1] = 2;
+        }
+        else
+        {
+            Debug.Log("No empty space in the rightmost column.");
+        }
+    }
+
+
+    void MoveOneEnemy()
+    {
+        Vector2 randomEnemy = GetRandomPositionOfValue(2);
+        boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
+        // randomly move enemy by one or two squares
+        if ((int)randomEnemy.y == 0)
+        {
+
+        }
+        else if ((int)randomEnemy.y == 1)
+        {
+            boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
+        }
+        else
+        {
+            if (Random.value < 0.5f)
+            {
+                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
+            }
+            else
+            {
+                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 0;
+                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] = 2;
+            }
+        }
+        
     }
 
     public void UpdateGrid()
