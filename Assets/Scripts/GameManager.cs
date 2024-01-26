@@ -76,25 +76,21 @@ public class GameManager : MonoBehaviour
         {
             for (int j = 0; j < boardState.GetLength(1); j++)
             {
+                float newX = -15.2f + (15.2f / 19f) * (i + j);
+                float newY = 0.7f + (7.6f / 19f) * j - (7.6f / 19f) * i;
+                Vector3 spawnPosition = new Vector3(newX, newY, 0f);
+
                 if (boardState[i, j] == 1)
                 {
-
-                    float newX = -15.2f + (15.2f / 19f) * (i + j);
-                    float newY = 0.7f + (7.6f / 19f) * j - (7.6f / 19f) * i;
-
-                    Vector3 spawnPosition = new Vector3(newX, newY, 0f);
                     GameObject newClown = Instantiate(clownPrefab, spawnPosition, Quaternion.identity);
+                    newClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -100f);
                     clowns.Add(newClown);
                 }
 
                 if (boardState[i, j] == 2)
                 {
-
-                    float newX = -15.2f + (15.2f / 19f) * (i + j);
-                    float newY = 0.7f + (7.6f / 19f) * j - (7.6f / 19f) * i;
-
-                    Vector3 spawnPosition = new Vector3(newX, newY, 0f);
                     GameObject newSoldier = Instantiate(soldierPrefab, spawnPosition, Quaternion.identity);
+                    newSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -100f);
                     soldiers.Add(newSoldier);
                 }
             }
