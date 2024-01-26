@@ -55,6 +55,11 @@ public class GameManager : MonoBehaviour
                 EnemyTurn();
             }
         }
+
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
     }
 
 
