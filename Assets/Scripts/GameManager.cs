@@ -100,13 +100,14 @@ public class GameManager : MonoBehaviour
     {
 
         Debug.Log("Enemy move made");
-        int numberSoldiersToMove = SoldiersCount() / 3;
+        int numDeadClowns = 10 - ClownCounter.CountClownsAlive();
+        int numberSoldiersToMove = (int)((float)SoldiersCount() * (0.3 + 0.07 * numDeadClowns));
         for (int i = 0; i < numberSoldiersToMove; i++)
         {
             MoveOneEnemy();
         }
 
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3 + numDeadClowns; i++)
         {
             if (Random.value < 0.7f)
             {
