@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class FadeOutScript : MonoBehaviour
 {
@@ -27,9 +28,17 @@ public class FadeOutScript : MonoBehaviour
         if (elapsedTime < delayBeforeFade)
         {
             Debug.Log(elapsedTime);
+            if (Input.GetMouseButtonDown(0))
+            {
+                elapsedTime = delayBeforeFade;
+            }
         }
-        else
+        else if (elapsedTime <= (delayBeforeFade + fadeDuration + 1.0f))
         {
+            if (Input.GetMouseButtonDown(0))
+            {
+                elapsedTime = delayBeforeFade + fadeDuration;
+            }
             // Calculate the normalized progress of the fade-out
             float t = Mathf.Clamp01((elapsedTime - delayBeforeFade) / fadeDuration);
 
@@ -44,6 +53,15 @@ public class FadeOutScript : MonoBehaviour
             if (t >= 1f)
             {
                 Debug.Log("Fade out theoretically complete?");
+            }
+        }
+        else
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                SceneManager.LoadScene("TitleScreen");
+                GameManager.ResetStaticStuff();
+                ClownCounter.ResetStaticStuff();
             }
         }
     }

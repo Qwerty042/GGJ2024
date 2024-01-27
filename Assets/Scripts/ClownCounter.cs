@@ -60,4 +60,9 @@ public class ClownCounter : MonoBehaviour
 
         return clownsAliveCount;
     }
+
+    public static void ResetStaticStuff()
+    {
+        gameOver = false;
+    }
 }
