@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -14,7 +15,10 @@ public class GameManager : MonoBehaviour
     public static Vector2Int currentGridPosition;
     public List<GameObject> clowns = new List<GameObject>();
     public List<GameObject> soldiers = new List<GameObject>();
-    private static List<Vector2Int> deathTiles = new List<Vector2Int>();
+    private static List<Vector2Int> deadClowns = new List<Vector2Int>();
+    private List<GameObject> ghostClowns = new List<GameObject>();
+    private static List<Vector2Int> deadSoldiers = new List<Vector2Int>();
+    private List<GameObject> ghostSoldiers= new List<GameObject>();
     public List<Bomb> bombs = new List<Bomb>();
     public float enemyTurnDelay;
 
@@ -75,6 +79,13 @@ public class GameManager : MonoBehaviour
         {
             Application.Quit();
         }
+
+        //foreach (GameObject item in collection)
+        //{
+
+        //}
+        //ghostClowns.RemoveAll(ghostClown => ghostClown.alpha == 0.0f);
+        //ghostSoldiers.RemoveAll(ghostSoldier => ghostSoldier.alpha == 0.0f); 
     }
 
 
@@ -129,8 +140,25 @@ public class GameManager : MonoBehaviour
         }
         bombs.RemoveAll(bomb => bomb.Obsolete());
 
-        boardManager.DeathTiles(deathTiles);
-        deathTiles.Clear();
+        foreach (Vector2Int deadClown in deadClowns)
+        {
+            float newX = -15.2f + (15.2f / 19f) * (deadClown.y + deadClown.x);
+            float newY = 0.7f + (7.6f / 19f) * deadClown.x - (7.6f / 19f) * deadClown.y;
+            Vector3 spawnPosition = new Vector3(newX, newY, 0f);
+            GameObject newGhostClown = Instantiate(ghostClownPrefab, spawnPosition, Quaternion.identity);
+            newGhostClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
+        }
+        foreach (Vector2Int deadSoldier in deadSoldiers)
+        {
+            float newX = -15.2f + (15.2f / 19f) * (deadSoldier.y + deadSoldier.x);
+            float newY = 0.7f + (7.6f / 19f) * deadSoldier.x - (7.6f / 19f) * deadSoldier.y;
+            Vector3 spawnPosition = new Vector3(newX, newY, 0f);
+            GameObject newSoldierClown = Instantiate(ghostSoldierPrefab, spawnPosition, Quaternion.identity);
+            newSoldierClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
+        }
+        boardManager.DeathTiles(deadClowns.Concat(deadSoldiers).ToList<Vector2Int>());
+        deadClowns.Clear();
+        deadSoldiers.Clear();
 
         UpdateGrid();
         enemyTurnDelay = 0;
@@ -250,12 +278,12 @@ public class GameManager : MonoBehaviour
 
     public static void ClownDied(Vector2Int pos)
     {
-        deathTiles.Add(pos);
+        deadClowns.Add(pos);
     }
 
     public static void SoldierDied(Vector2Int pos)
     {
-        deathTiles.Add(pos);
+        deadSoldiers.Add(pos);
     }
 
     public void UpdateGrid()
