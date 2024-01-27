@@ -105,15 +105,15 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        //if(Random.value < 0.1f)
-        //{
-        //    SpawnBomb();
-        //}
-
-        if(bombs.Count == 0)
+        if (Random.value < 0.5f)
         {
             SpawnBomb();
         }
+
+        //if (bombs.Count == 0)
+        //{
+        //    SpawnBomb();
+        //}
 
         foreach (Bomb bomb in bombs)
         {
@@ -176,8 +176,8 @@ public class GameManager : MonoBehaviour
 
     void SpawnBomb()
     {
-        //Vector2Int spawnPos = new Vector2Int(Random.Range(0, boardState.GetLength(0) - 1), Random.Range(0, boardState.GetLength(1) - 1));
-        Vector2Int spawnPos = new Vector2Int(2, 2);
+        Vector2Int spawnPos = new Vector2Int(Random.Range(0, boardState.GetLength(0) - 1), Random.Range(0, boardState.GetLength(1) - 1));
+        //Vector2Int spawnPos = new Vector2Int(2, 2);
         bombs.Add(new Bomb(spawnPos, bombPrefab));
     }
 
@@ -237,14 +237,14 @@ public class GameManager : MonoBehaviour
                 if (boardState[i, j] == 1)
                 {
                     GameObject newClown = Instantiate(clownPrefab, spawnPosition, Quaternion.identity);
-                    newClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -100f);
+                    newClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f);
                     clowns.Add(newClown);
                 }
 
                 if (boardState[i, j] == 2)
                 {
                     GameObject newSoldier = Instantiate(soldierPrefab, spawnPosition, Quaternion.identity);
-                    newSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -100f);
+                    newSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f);
                     soldiers.Add(newSoldier);
                 }
             }
@@ -385,7 +385,8 @@ public class Bomb
                         float newY = 0.7f + (7.6f / 19f) * (gridPos.x - 1) - (7.6f / 19f) * (gridPos.y + 1);
                         Vector3 spawnPosition = new Vector3(newX, newY, 0f);
                         GameObject newBombSprite = MonoBehaviour.Instantiate(prefab, spawnPosition, Quaternion.identity);
-                        newBombSprite.GetComponent<SpriteRenderer>().sortingOrder = 32000;
+                        float jankY = 0.7f + (7.6f / 19f) * (gridPos.x) - (7.6f / 19f) * (gridPos.y);
+                        newBombSprite.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(jankY * -1000f) + 1;
                         bombSprites.Add(newBombSprite);
                     }
                 }

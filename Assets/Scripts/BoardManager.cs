@@ -30,7 +30,7 @@ public class BoardManager : MonoBehaviour
         DestroyAllSpecialTiles();
         if (isMouseOverBoard)
         {
-            CreateTileAtBoardPosition(mouseoverTilePrefab, mouseoverTile, 1);
+            CreateTileAtBoardPosition(mouseoverTilePrefab, mouseoverTile, 5);
         }
 
         if (isSelected)
@@ -39,7 +39,7 @@ public class BoardManager : MonoBehaviour
 
             foreach (Vector2Int validTile in validTileList) 
             {
-                CreateTileAtBoardPosition(validTilePrefab, validTile);
+                CreateTileAtBoardPosition(validTilePrefab, validTile, 1);
             }
         }
 

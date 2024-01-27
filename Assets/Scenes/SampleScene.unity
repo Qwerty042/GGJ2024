@@ -4625,7 +4625,7 @@ MonoBehaviour:
   clownPrefab: {fileID: 87204100}
   soldierPrefab: {fileID: 1087176971}
   bombPrefab: {fileID: 1662137955}
-  bombExplodedSprite: {fileID: 21300000, guid: 5728d3322a316de44bffd4d7fac45e63, type: 3}
+  boardManager: {fileID: 1775965449}
   clowns: []
   soldiers: []
   enemyTurnDelay: 0
@@ -5582,6 +5582,7 @@ MonoBehaviour:
   mouseoverTilePrefab: {fileID: 1186512706}
   selectedTilePrefab: {fileID: 341089296}
   validTilePrefab: {fileID: 1017269373}
+  explodedTilePrefab: {fileID: 1848836503}
 --- !u!4 &1775965450
 Transform:
   m_ObjectHideFlags: 0
