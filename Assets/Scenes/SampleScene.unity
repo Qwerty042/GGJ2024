@@ -5708,6 +5708,7 @@ MonoBehaviour:
   selectedTilePrefab: {fileID: 341089296}
   validTilePrefab: {fileID: 1017269373}
   explodedTilePrefab: {fileID: 1990575597}
+  deathTilePrefab: {fileID: 1848836503}
 --- !u!4 &1775965450
 Transform:
   m_ObjectHideFlags: 0
