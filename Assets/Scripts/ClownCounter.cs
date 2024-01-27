@@ -4,15 +4,27 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine.SceneManagement;
+using Unity.VisualScripting;
 
 public class ClownCounter : MonoBehaviour
 {
     public TextMeshProUGUI clownsAliveText;
+    private static bool gameOver = false;
+    private float gameOverDelayCounter = 1.5f;
 
     void Update()
     {
         // Update the "Clowns Alive" text
         UpdateClownsAliveText();
+        
+        if (gameOver)
+        {
+            gameOverDelayCounter -= Time.deltaTime;
+            if (gameOverDelayCounter <= 0.0f)
+            {
+                SceneManager.LoadScene("GameOver");
+            }
+        }
     }
 
     void UpdateClownsAliveText()
@@ -42,7 +54,8 @@ public class ClownCounter : MonoBehaviour
 
         if (clownsAliveCount == 0)
         {
-            SceneManager.LoadScene("GameOver");
+            gameOver = true;
+            //SceneManager.LoadScene("GameOver");
         }
 
         return clownsAliveCount;
