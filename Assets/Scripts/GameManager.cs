@@ -405,6 +405,7 @@ public class Bomb
                     Vector2Int gridPos = new Vector2Int(relativeAoePos.x + pos.x, relativeAoePos.y + pos.y);
                     if (gridPos.x >= 0 && gridPos.x < 20 && gridPos.y >= 0 && gridPos.y < 20)
                     {
+                        GameManager.boardState[gridPos.y, gridPos.x] = 0;
                         explodedTiles.Add(gridPos);
                     }
                 }
