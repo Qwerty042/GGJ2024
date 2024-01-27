@@ -18,7 +18,7 @@ public class GameManager : MonoBehaviour
     public AudioClip enemyMoveSound;
     AudioSource audioSourceSoundEffects;
 
-    public static int[,] boardState = new int[,]
+    public static int[,] boardState = new int[,] // 1 is clown, 2 is soldier
     {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -41,6 +41,8 @@ public class GameManager : MonoBehaviour
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
     };
+
+    private int[,] lastBoardState = boardState;
 
     public static string gameState = "PLAYER TURN NO CHARACTER SELECTED";
     public static int movesRemaining = 3;
@@ -130,6 +132,7 @@ public class GameManager : MonoBehaviour
         UpdateGrid();
         enemyTurnDelay = 0;
         gameState = "PLAYER TURN NO CHARACTER SELECTED";
+        FindAllTheDeadBodiesAndMakeSomeCoolEffects();
     }
 
     void SpawnNewEnemy()
@@ -225,6 +228,35 @@ public class GameManager : MonoBehaviour
             }
         }
         
+    }
+
+    private void FindAllTheDeadBodiesAndMakeSomeCoolEffects()
+    {
+        List<Vector2Int> deathTiles = new List<Vector2Int>();
+        // Iterate through the boardState to count '1's
+        for (int i = 0; i < GameManager.boardState.GetLength(0); i++)
+        {
+            for (int j = 0; j < GameManager.boardState.GetLength(1); j++)
+            {
+                Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!");
+                if (boardState[i,j] == 0)
+                {
+                    if (lastBoardState[i,j] == 1) //clown died
+                    {
+                        // do some stuff to show a clown died
+                        Debug.Log("!!! clown died");
+                        deathTiles.Add(new Vector2Int(j,i));
+                    }
+                    else if (lastBoardState[i,j] == 2) // soldier died
+                    {
+                        // do some stuff to show a soldier died
+                        deathTiles.Add(new Vector2Int(j, i));
+                    }
+                }
+            }
+        }
+        boardManager.DeathTiles(deathTiles);
+        lastBoardState = boardState;
     }
 
     public void UpdateGrid()
