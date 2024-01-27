@@ -173,6 +173,7 @@ public class GameManager : MonoBehaviour
             int rowIndex = emptyIndices[randomIndex];
 
             // Set the randomly selected space to 2
+            CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(rowIndex, columns - 1);
             boardState[rowIndex, columns - 1] = 2;
         }
         else
@@ -192,15 +193,16 @@ public class GameManager : MonoBehaviour
         Vector2 randomEnemy = GetRandomPositionOfValue(2);
         
         // randomly move enemy by one or two squares
-        if ((int)randomEnemy.y == 0)
+        if ((int)randomEnemy.y == 0) // is the enemy at the end of the board? if so they just dissapear
         {
             boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
         }
         else if ((int)randomEnemy.y == 1)
         {
-            if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // stops soldiers from smashing into each other
+            if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // only move one square to reach the edge
             {
-                boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
+                CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y);
+                CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
                 boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
             }
         }
@@ -210,21 +212,36 @@ public class GameManager : MonoBehaviour
             {
                 if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // stops soldiers from smashing into each other
                 {
-                    boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
+                    CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y);
+                    CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
                     boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
                 }
             }
             else
             {
-                if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // stops soldiers from smashing into each other
+                if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2 && boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] != 2) // stops soldiers from smashing into each other
                 {
-                    boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
-                    boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 0;
+                    CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y);
+                    CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
+                    CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 2);
                     boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] = 2;
                 }
             }
         }
         
+    }
+
+    private void CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(int x, int y)
+    {
+        if (boardState[x, y] == 1)
+        {
+            ClownDied(new Vector2Int(x, y));
+        }
+        else if (boardState[x, y] == 2)
+        {
+            SoldierDied(new Vector2Int(x, y));
+        }
+        boardState[x, y] = 0;
     }
 
     public static void ClownDied(Vector2Int pos)
