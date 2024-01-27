@@ -9,6 +9,20 @@ public class HandleMouseClick : MonoBehaviour
     public GameManager gameManager;
     public BoardManager boardManager;
 
+    public AudioClip selectSound;
+    public AudioClip moveSound;
+    public AudioClip failedAttackSound;
+    
+
+    AudioSource audioSourceSoundEffects;
+    
+
+    private void Start()
+    {
+        audioSourceSoundEffects = gameObject.AddComponent<AudioSource>();
+
+    }
+
     void Update()
     {
         // Check for mouse click
@@ -57,7 +71,10 @@ public class HandleMouseClick : MonoBehaviour
             List<Vector2Int> validTiles = GetValidTiles(gridPosition);
             boardManager.ValidTiles(validTiles);
             Debug.Log("Character selected");
-            
+            audioSourceSoundEffects.clip = selectSound;
+            audioSourceSoundEffects.Play();
+
+
         }
         else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 1) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
         {
@@ -66,6 +83,15 @@ public class HandleMouseClick : MonoBehaviour
             List<Vector2Int> validTiles = GetValidTiles(gridPosition);
             boardManager.ValidTiles(validTiles);
             Debug.Log("Character reselected");
+
+            audioSourceSoundEffects.clip = selectSound;
+            audioSourceSoundEffects.Play();
+
+        }
+        else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 2) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
+        {
+            audioSourceSoundEffects.clip = failedAttackSound;
+            audioSourceSoundEffects.Play();
         }
         else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 0) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
         {
@@ -78,6 +104,9 @@ public class HandleMouseClick : MonoBehaviour
                 gameManager.UpdateGrid();
                 GameManager.movesRemaining -= 1;
                 GameManager.gameState = "PLAYER TURN NO CHARACTER SELECTED";
+
+                audioSourceSoundEffects.clip = moveSound;
+                audioSourceSoundEffects.Play();
 
                 if (GameManager.movesRemaining <= 0)
                 {
