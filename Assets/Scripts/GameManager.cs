@@ -8,9 +8,11 @@ public class GameManager : MonoBehaviour
 {
     public GameObject clownPrefab;
     public GameObject soldierPrefab;
+    public GameObject soldierPrefab2;
     public GameObject bombPrefab;
     public GameObject ghostClownPrefab;
     public GameObject ghostSoldierPrefab;
+    public GameObject ghostSoldierPrefab2;
     public BoardManager boardManager;
     public static Vector2Int currentGridPosition;
     public List<GameObject> clowns = new List<GameObject>();
@@ -18,13 +20,18 @@ public class GameManager : MonoBehaviour
     private static List<Vector2Int> deadClowns = new List<Vector2Int>();
     private List<GameObject> ghostClowns = new List<GameObject>();
     private static List<Vector2Int> deadSoldiers = new List<Vector2Int>();
+    private static List<Vector2Int> deadSoldiers2 = new List<Vector2Int>();
     private List<GameObject> ghostSoldiers= new List<GameObject>();
     public List<Bomb> bombs = new List<Bomb>();
     public float enemyTurnDelay;
 
+    public GameObject bloodScreen;
+
     public AudioClip enemyMoveSound;
     public AudioClip explodeSound;
     AudioSource audioSourceSoundEffects;
+
+    
 
     public static int[,] boardState = new int[,] // 1 is clown, 2 is soldier
     {
@@ -36,10 +43,10 @@ public class GameManager : MonoBehaviour
         {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -58,11 +65,14 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        OpacityManager.ChangeSpriteOpacity(bloodScreen, 0f);
         audioSourceSoundEffects = gameObject.AddComponent<AudioSource>();
         UpdateGrid();
     }
     void Update()
     {
+        OpacityManager.DecrementOpacityOverTime(bloodScreen, 2.5f);
+
         if (gameState == "ENEMY TURN")
         {
             enemyTurnDelay += Time.deltaTime;
@@ -95,12 +105,12 @@ public class GameManager : MonoBehaviour
     {
         int soldiersAliveCount = 0;
 
-        // Iterate through the boardState to count '1's
+        // Iterate through the boardState to count '2's
         for (int i = 0; i < GameManager.boardState.GetLength(0); i++)
         {
             for (int j = 0; j < GameManager.boardState.GetLength(1); j++)
             {
-                if (GameManager.boardState[i, j] == 2)
+                if (GameManager.boardState[i, j] >= 2)
                 {
                     soldiersAliveCount++;
                 }
@@ -129,7 +139,7 @@ public class GameManager : MonoBehaviour
             }
         }
 
-        if (Random.value < 0.5f)
+        if (Random.value < 0.5f + (float)numDeadClowns * 0.05)
         {
             SpawnBomb();
         }
@@ -142,6 +152,7 @@ public class GameManager : MonoBehaviour
 
         foreach (Vector2Int deadClown in deadClowns)
         {
+            OpacityManager.ChangeSpriteOpacity(bloodScreen, 1.0f);
             float newX = -15.2f + (15.2f / 19f) * (deadClown.y + deadClown.x);
             float newY = 0.7f + (7.6f / 19f) * deadClown.x - (7.6f / 19f) * deadClown.y;
             Vector3 spawnPosition = new Vector3(newX, newY, 0f);
@@ -156,9 +167,18 @@ public class GameManager : MonoBehaviour
             GameObject newSoldierClown = Instantiate(ghostSoldierPrefab, spawnPosition, Quaternion.identity);
             newSoldierClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
         }
-        boardManager.DeathTiles(deadClowns.Concat(deadSoldiers).ToList<Vector2Int>());
+        foreach (Vector2Int deadSoldier2 in deadSoldiers2)
+        {
+            float newX = -15.2f + (15.2f / 19f) * (deadSoldier2.y + deadSoldier2.x);
+            float newY = 0.7f + (7.6f / 19f) * deadSoldier2.x - (7.6f / 19f) * deadSoldier2.y;
+            Vector3 spawnPosition = new Vector3(newX, newY, 0f);
+            GameObject newSoldierClown = Instantiate(ghostSoldierPrefab2, spawnPosition, Quaternion.identity);
+            newSoldierClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
+        }
+        boardManager.DeathTiles(deadClowns.Concat(deadSoldiers).Concat(deadSoldiers2).ToList<Vector2Int>());
         deadClowns.Clear();
         deadSoldiers.Clear();
+        deadSoldiers2.Clear();
 
         UpdateGrid();
         enemyTurnDelay = 0;
@@ -204,9 +224,14 @@ public class GameManager : MonoBehaviour
             int randomIndex = Random.Range(0, emptyIndices.Count);
             int rowIndex = emptyIndices[randomIndex];
 
-            // Set the randomly selected space to 2
+            // Set the randomly selected space to 2, 3, or 4
             CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(rowIndex, columns - 1);
-            boardState[rowIndex, columns - 1] = 2;
+            if (Random.value < 0.5)
+                boardState[rowIndex, columns - 1] = 2;
+            else if (Random.value < 0.5)
+                boardState[rowIndex, columns - 1] = 3;
+            else
+                boardState[rowIndex, columns - 1] = 4;
         }
         else
         {
@@ -222,41 +247,59 @@ public class GameManager : MonoBehaviour
 
     void MoveOneEnemy()
     {
-        Vector2 randomEnemy = GetRandomPositionOfValue(2);
-        
+        Vector2 randomEnemy;
+        int enemyType;
+
+        if (Random.value < 0.5)
+        {
+            randomEnemy = GetRandomPositionOfValue(2);
+            enemyType = 2;
+        }
+        else if (Random.value < 0.5)
+        {
+            randomEnemy = GetRandomPositionOfValue(3);
+            enemyType = 3;
+        }
+        else
+        {
+            randomEnemy = GetRandomPositionOfValue(4);
+            enemyType = 4;
+        }
+            
+
         // randomly move enemy by one or two squares
-        if ((int)randomEnemy.y == 0) // is the enemy at the end of the board? if so they just dissapear
+        if ((int)randomEnemy.y == 0) // is the enemy at the end of the board? if so they just disappear
         {
             boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
         }
         else if ((int)randomEnemy.y == 1)
         {
-            if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // only move one square to reach the edge
+            if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] < 2) // only move one square to reach the edge
             {
                 boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
                 CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
-                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
+                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = enemyType;
             }
         }
         else
         {
             if (Random.value < 0.5f)
             {
-                if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // stops soldiers from smashing into each other
+                if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] < 2) // stops soldiers from smashing into each other
                 {
                     boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
                     CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
-                    boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = enemyType;
                 }
             }
             else
             {
-                if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2 && boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] != 2) // stops soldiers from smashing into each other
+                if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] < 2 && boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] < 2) // stops soldiers from smashing into each other
                 {
                     boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
                     CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
                     CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 2);
-                    boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] = 2;
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] = enemyType;
                 }
             }
         }
@@ -269,9 +312,13 @@ public class GameManager : MonoBehaviour
         {
             ClownDied(new Vector2Int(y, x));
         }
-        else if (boardState[x, y] == 2)
+        else if ((boardState[x, y] == 2) || (boardState[x, y] == 4))
         {
             SoldierDied(new Vector2Int(y, x));
+        }
+        if (boardState[x, y] == 1)
+        {
+            SoldierDied2(new Vector2Int(y, x));
         }
         boardState[x, y] = 0;
     }
@@ -284,6 +331,11 @@ public class GameManager : MonoBehaviour
     public static void SoldierDied(Vector2Int pos)
     {
         deadSoldiers.Add(pos);
+    }
+
+    public static void SoldierDied2(Vector2Int pos)
+    {
+        deadSoldiers2.Add(pos);
     }
 
     public void UpdateGrid()
@@ -306,9 +358,16 @@ public class GameManager : MonoBehaviour
                     clowns.Add(newClown);
                 }
 
-                if (boardState[i, j] == 2)
+                if ((boardState[i, j] == 2) || (boardState[i, j] == 4))
                 {
                     GameObject newSoldier = Instantiate(soldierPrefab, spawnPosition, Quaternion.identity);
+                    newSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f);
+                    soldiers.Add(newSoldier);
+                }
+
+                if (boardState[i, j] == 3)
+                {
+                    GameObject newSoldier = Instantiate(soldierPrefab2, spawnPosition, Quaternion.identity);
                     newSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f);
                     soldiers.Add(newSoldier);
                 }
@@ -475,9 +534,13 @@ public class Bomb
                         {
                             GameManager.ClownDied(gridPos);
                         }
-                        else if (GameManager.boardState[gridPos.y, gridPos.x] == 2)
+                        else if ((GameManager.boardState[gridPos.y, gridPos.x] == 2) || (GameManager.boardState[gridPos.y, gridPos.x] == 4))
                         {
                             GameManager.SoldierDied(gridPos);
+                        }
+                        else if (GameManager.boardState[gridPos.y, gridPos.x] == 3)
+                        {
+                            GameManager.SoldierDied2(gridPos);
                         }
                         GameManager.boardState[gridPos.y, gridPos.x] = 0;
                         explodedTiles.Add(gridPos);

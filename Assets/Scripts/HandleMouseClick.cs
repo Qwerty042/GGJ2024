@@ -90,7 +90,7 @@ public class HandleMouseClick : MonoBehaviour
             audioSourceSoundEffects.Play();
 
         }
-        else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 2) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
+        else if ((GameManager.boardState[gridPosition.y, gridPosition.x] >= 2) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
         {
             audioSourceSoundEffects.clip = failedAttackSound;
             audioSourceSoundEffects.Play();
