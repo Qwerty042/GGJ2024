@@ -94,19 +94,13 @@ public class GameManager : MonoBehaviour
             MoveOneEnemy();
         }
 
-        if (Random.value < 0.7f)
+        for (int i = 0; i < 3; i++)
         {
-            SpawnNewEnemy();
+            if (Random.value < 0.7f)
+            {
+                SpawnNewEnemy();
+            }
         }
-        if (Random.value < 0.5f)
-        {
-            SpawnNewEnemy();
-        }
-        if (Random.value < 0.2f)
-        {
-            SpawnNewEnemy();
-        }
-
 
         UpdateGrid();
         enemyTurnDelay = 0;
@@ -121,7 +115,7 @@ public class GameManager : MonoBehaviour
         bool hasEmptySpace = false;
         for (int i = 0; i < boardState.GetLength(0); i++)
         {
-            if (boardState[i, columns - 1] == 0)
+            if ((boardState[i, columns - 1] == 0) || (boardState[i, columns - 1] == 1))
             {
                 hasEmptySpace = true;
                 break;
@@ -135,7 +129,7 @@ public class GameManager : MonoBehaviour
             List<int> emptyIndices = new List<int>();
             for (int i = 0; i < boardState.GetLength(0); i++)
             {
-                if (boardState[i, columns - 1] == 0)
+                if ((boardState[i, columns - 1] == 0) || (boardState[i, columns - 1] == 1))
                 {
                     emptyIndices.Add(i);
                     
@@ -165,26 +159,38 @@ public class GameManager : MonoBehaviour
     void MoveOneEnemy()
     {
         Vector2 randomEnemy = GetRandomPositionOfValue(2);
-        boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
+        
         // randomly move enemy by one or two squares
         if ((int)randomEnemy.y == 0)
         {
-
+            boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
         }
         else if ((int)randomEnemy.y == 1)
         {
-            boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
+            if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // stops soldiers from smashing into each other
+            {
+                boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
+                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
+            }
         }
         else
         {
             if (Random.value < 0.5f)
             {
-                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
+                if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // stops soldiers from smashing into each other
+                {
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
+                }
             }
             else
             {
-                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 0;
-                boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] = 2;
+                if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // stops soldiers from smashing into each other
+                {
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 0;
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] = 2;
+                }
             }
         }
         
