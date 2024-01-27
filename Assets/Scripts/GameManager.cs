@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     public static Vector2Int currentGridPosition;
     public List<GameObject> clowns = new List<GameObject>();
     public List<GameObject> soldiers = new List<GameObject>();
+    private static List<Vector2Int> deathTiles = new List<Vector2Int>();
     public List<Bomb> bombs = new List<Bomb>();
     public float enemyTurnDelay;
 
@@ -118,21 +119,18 @@ public class GameManager : MonoBehaviour
             SpawnBomb();
         }
 
-        //if (bombs.Count == 0)
-        //{
-        //    SpawnBomb();
-        //}
-
         foreach (Bomb bomb in bombs)
         {
             bomb.Update(boardManager);
         }
         bombs.RemoveAll(bomb => bomb.Obsolete());
 
+        boardManager.DeathTiles(deathTiles);
+        deathTiles.Clear();
+
         UpdateGrid();
         enemyTurnDelay = 0;
         gameState = "PLAYER TURN NO CHARACTER SELECTED";
-        FindAllTheDeadBodiesAndMakeSomeCoolEffects();
     }
 
     void SpawnNewEnemy()
@@ -186,7 +184,6 @@ public class GameManager : MonoBehaviour
     void SpawnBomb()
     {
         Vector2Int spawnPos = new Vector2Int(Random.Range(0, boardState.GetLength(0) - 1), Random.Range(0, boardState.GetLength(1) - 1));
-        //Vector2Int spawnPos = new Vector2Int(2, 2);
         bombs.Add(new Bomb(spawnPos, bombPrefab));
     }
 
@@ -230,33 +227,14 @@ public class GameManager : MonoBehaviour
         
     }
 
-    private void FindAllTheDeadBodiesAndMakeSomeCoolEffects()
+    public static void ClownDied(Vector2Int pos)
     {
-        List<Vector2Int> deathTiles = new List<Vector2Int>();
-        // Iterate through the boardState to count '1's
-        for (int i = 0; i < GameManager.boardState.GetLength(0); i++)
-        {
-            for (int j = 0; j < GameManager.boardState.GetLength(1); j++)
-            {
-                Debug.Log("!!!!!!!!!!!!!!!!!!!!!!!!");
-                if (boardState[i,j] == 0)
-                {
-                    if (lastBoardState[i,j] == 1) //clown died
-                    {
-                        // do some stuff to show a clown died
-                        Debug.Log("!!! clown died");
-                        deathTiles.Add(new Vector2Int(j,i));
-                    }
-                    else if (lastBoardState[i,j] == 2) // soldier died
-                    {
-                        // do some stuff to show a soldier died
-                        deathTiles.Add(new Vector2Int(j, i));
-                    }
-                }
-            }
-        }
-        boardManager.DeathTiles(deathTiles);
-        lastBoardState = boardState;
+        deathTiles.Add(pos);
+    }
+
+    public static void SoldierDied(Vector2Int pos)
+    {
+        deathTiles.Add(pos);
     }
 
     public void UpdateGrid()
@@ -437,6 +415,14 @@ public class Bomb
                     Vector2Int gridPos = new Vector2Int(relativeAoePos.x + pos.x, relativeAoePos.y + pos.y);
                     if (gridPos.x >= 0 && gridPos.x < 20 && gridPos.y >= 0 && gridPos.y < 20)
                     {
+                        if (GameManager.boardState[gridPos.y, gridPos.x] == 1)
+                        {
+                            GameManager.ClownDied(gridPos);
+                        }
+                        else if (GameManager.boardState[gridPos.y, gridPos.x] == 2)
+                        {
+                            GameManager.SoldierDied(gridPos);
+                        }
                         GameManager.boardState[gridPos.y, gridPos.x] = 0;
                         explodedTiles.Add(gridPos);
                     }

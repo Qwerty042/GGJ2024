@@ -95,7 +95,7 @@ public class BoardManager : MonoBehaviour
 
     public void DeathTiles(List<Vector2Int> deathTiles)
     {
-        deathTileList = deathTiles;
+        deathTileList = new List<Vector2Int>(deathTiles);
     }
 
     private void DestroyAllSpecialTiles()
