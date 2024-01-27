@@ -25,7 +25,7 @@ public class HandleMouseover : MonoBehaviour
             14 - cellPosition.y
             );
         boardManager.MouseoverPosition(gridPosition);
-        Debug.Log("Cell Position: " + cellPosition);
-        Debug.Log("Grid Position: " + gridPosition);
+        //Debug.Log("Cell Position: " + cellPosition);
+        //Debug.Log("Grid Position: " + gridPosition);
     }
 }

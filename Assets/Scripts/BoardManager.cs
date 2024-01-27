@@ -8,12 +8,14 @@ public class BoardManager : MonoBehaviour
     private Vector2Int mouseoverTile;
     private Vector2Int selectedTile;
     private List<Vector2Int> validTileList;
+    private List<Vector2Int> explodedTileList = new List<Vector2Int>();
     private bool isSelected;
     private bool isMouseOverBoard;
     public int boardSize;
     public GameObject mouseoverTilePrefab;
     public GameObject selectedTilePrefab;
     public GameObject validTilePrefab;
+    public GameObject explodedTilePrefab;
     private List<GameObject> specialTiles = new List<GameObject>();
 
     // Start is called before the first frame update
@@ -38,6 +40,14 @@ public class BoardManager : MonoBehaviour
             foreach (Vector2Int validTile in validTileList) 
             {
                 CreateTileAtBoardPosition(validTilePrefab, validTile);
+            }
+        }
+
+        if (explodedTileList.Count != 0)
+        {
+            foreach (Vector2Int explodedTile in explodedTileList)
+            {
+                CreateTileAtBoardPosition(explodedTilePrefab, explodedTile);
             }
         }
     }
@@ -69,6 +79,11 @@ public class BoardManager : MonoBehaviour
     public void ValidTiles(List<Vector2Int> validTiles)
     {
         validTileList = validTiles;
+    }
+
+    public void ExplodedTiles(List<Vector2Int> explodedTiles)
+    {
+        explodedTileList = explodedTiles;
     }
 
     private void DestroyAllSpecialTiles()

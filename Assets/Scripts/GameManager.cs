@@ -7,9 +7,12 @@ public class GameManager : MonoBehaviour
 {
     public GameObject clownPrefab;
     public GameObject soldierPrefab;
+    public GameObject bombPrefab;
+    public BoardManager boardManager;
     public static Vector2Int currentGridPosition;
     public List<GameObject> clowns = new List<GameObject>();
     public List<GameObject> soldiers = new List<GameObject>();
+    public List<Bomb> bombs = new List<Bomb>();
     public int enemyTurnDelay;
 
     public AudioClip enemyMoveSound;
@@ -108,6 +111,22 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        //if(Random.value < 0.1f)
+        //{
+        //    SpawnBomb();
+        //}
+
+        if(bombs.Count == 0)
+        {
+            SpawnBomb();
+        }
+
+        foreach (Bomb bomb in bombs)
+        {
+            bomb.Update(boardManager);
+        }
+        bombs.RemoveAll(bomb => bomb.Obsolete());
+
         UpdateGrid();
         enemyTurnDelay = 0;
         gameState = "PLAYER TURN NO CHARACTER SELECTED";
@@ -161,6 +180,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void SpawnBomb()
+    {
+        //Vector2Int spawnPos = new Vector2Int(Random.Range(0, boardState.GetLength(0) - 1), Random.Range(0, boardState.GetLength(1) - 1));
+        Vector2Int spawnPos = new Vector2Int(2, 2);
+        bombs.Add(new Bomb(spawnPos, bombPrefab));
+    }
 
     void MoveOneEnemy()
     {
@@ -301,5 +326,106 @@ public class GameManager : MonoBehaviour
             }
             Debug.Log("Row " + i + ": " + row);
         }
+    }
+}
+
+public class Bomb
+{
+    private GameObject prefab;
+    private List<GameObject> bombSprites = new List<GameObject>();
+    private Vector2Int pos;
+    private BombState state;
+    
+    /*    -2-1 0 1 2
+     * 
+     * -2  0 0 1 0 0
+     * -1  0 1 1 1 0
+     *  0  1 1 x 1 1
+     *  1  0 1 1 1 0
+     *  2  0 0 1 0 0
+     */
+    
+    private Vector2Int[] relativeAoePositions = new Vector2Int[]
+    {
+        new Vector2Int( 0, -2),
+        new Vector2Int(-1, -1),
+        new Vector2Int( 0, -1),
+        new Vector2Int( 1, -1),
+        new Vector2Int(-2, 0),
+        new Vector2Int(-1, 0),
+        new Vector2Int( 0, 0),
+        new Vector2Int( 1, 0),
+        new Vector2Int( 2, 0),
+        new Vector2Int(-1, 1),
+        new Vector2Int( 0, 1),
+        new Vector2Int( 1, 1),
+        new Vector2Int(0, 2),
+    };
+
+    enum BombState
+    {
+        INIT,
+        EXPLODE,
+        DESTROY,
+        OBSOLETE,
+    }
+
+    public Bomb(Vector2Int spawnPos, GameObject bombPrefab)
+    {
+        prefab = bombPrefab;
+        pos = spawnPos;
+        state = BombState.INIT;
+    }
+
+    public void Update(BoardManager boardManager)
+    {
+        switch (state)
+        {
+            case BombState.INIT:
+                foreach (Vector2Int relativeAoePos in relativeAoePositions)
+                {
+                    Vector2Int gridPos = new Vector2Int(relativeAoePos.x + pos.x, relativeAoePos.y + pos.y);
+                    if (gridPos.x >= 0 && gridPos.x < 20 && gridPos.y >= 0 && gridPos.y < 20)
+                    {
+                        float newX = -15.2f + (15.2f / 19f) * ((gridPos.y + 1) + (gridPos.x - 1));
+                        float newY = 0.7f + (7.6f / 19f) * (gridPos.x - 1) - (7.6f / 19f) * (gridPos.y + 1);
+                        Vector3 spawnPosition = new Vector3(newX, newY, 0f);
+                        GameObject newBombSprite = MonoBehaviour.Instantiate(prefab, spawnPosition, Quaternion.identity);
+                        newBombSprite.GetComponent<SpriteRenderer>().sortingOrder = 32000;
+                        bombSprites.Add(newBombSprite);
+                    }
+                }
+                state = BombState.EXPLODE;
+                break;
+            case BombState.EXPLODE:
+                List<Vector2Int> explodedTiles = new List<Vector2Int>();
+                foreach (Vector2Int relativeAoePos in relativeAoePositions)
+                {
+                    Vector2Int gridPos = new Vector2Int(relativeAoePos.x + pos.x, relativeAoePos.y + pos.y);
+                    if (gridPos.x >= 0 && gridPos.x < 20 && gridPos.y >= 0 && gridPos.y < 20)
+                    {
+                        explodedTiles.Add(gridPos);
+                    }
+                }
+                boardManager.ExplodedTiles(explodedTiles);
+                foreach (GameObject bomb in bombSprites)
+                {
+                    MonoBehaviour.Destroy(bomb);
+                }
+                state = BombState.DESTROY;
+                break;
+            case BombState.DESTROY:
+                boardManager.ExplodedTiles(new List<Vector2Int>());
+                state = BombState.OBSOLETE;
+                break;
+            case BombState.OBSOLETE:
+                // Wait to be deleted
+                break;
+        }
+    }
+
+    public bool Obsolete()
+    {
+        return state == BombState.OBSOLETE;
     }
 }
