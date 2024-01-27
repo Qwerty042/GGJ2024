@@ -20,6 +20,7 @@ public class HandleMouseClick : MonoBehaviour
     private void Start()
     {
         audioSourceSoundEffects = gameObject.AddComponent<AudioSource>();
+        audioSourceSoundEffects.volume = 0.5f;
 
     }
 
