@@ -9,6 +9,11 @@ public class ScoreUpdate : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
+
         scoreText.text = "Score: " + GameManager.score;
     }
 }

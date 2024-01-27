@@ -42,7 +42,7 @@ public class ClownCounter : MonoBehaviour
 
         if (clownsAliveCount == 0)
         {
-            SceneManager.LoadScene("GameOverScene");
+            SceneManager.LoadScene("GameOver");
         }
 
         return clownsAliveCount;
