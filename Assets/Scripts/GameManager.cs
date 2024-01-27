@@ -201,7 +201,7 @@ public class GameManager : MonoBehaviour
         {
             if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // only move one square to reach the edge
             {
-                CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y);
+                boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
                 CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
                 boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
             }
@@ -212,7 +212,7 @@ public class GameManager : MonoBehaviour
             {
                 if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2) // stops soldiers from smashing into each other
                 {
-                    CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y);
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
                     CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
                     boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] = 2;
                 }
@@ -221,7 +221,7 @@ public class GameManager : MonoBehaviour
             {
                 if (boardState[(int)randomEnemy.x, (int)randomEnemy.y - 1] != 2 && boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] != 2) // stops soldiers from smashing into each other
                 {
-                    CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y);
+                    boardState[(int)randomEnemy.x, (int)randomEnemy.y] = 0;
                     CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 1);
                     CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay((int)randomEnemy.x, (int)randomEnemy.y - 2);
                     boardState[(int)randomEnemy.x, (int)randomEnemy.y - 2] = 2;
@@ -235,11 +235,11 @@ public class GameManager : MonoBehaviour
     {
         if (boardState[x, y] == 1)
         {
-            ClownDied(new Vector2Int(x, y));
+            ClownDied(new Vector2Int(y, x));
         }
         else if (boardState[x, y] == 2)
         {
-            SoldierDied(new Vector2Int(x, y));
+            SoldierDied(new Vector2Int(y, x));
         }
         boardState[x, y] = 0;
     }
