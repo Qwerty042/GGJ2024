@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviour
     public List<GameObject> clowns = new List<GameObject>();
     public List<GameObject> soldiers = new List<GameObject>();
     public List<Bomb> bombs = new List<Bomb>();
-    public int enemyTurnDelay;
+    public float enemyTurnDelay;
 
     public AudioClip enemyMoveSound;
     AudioSource audioSourceSoundEffects;
@@ -55,9 +55,9 @@ public class GameManager : MonoBehaviour
     {
         if (gameState == "ENEMY TURN")
         {
-            enemyTurnDelay += 1;
+            enemyTurnDelay += Time.deltaTime;
 
-            if (enemyTurnDelay == 400)
+            if (enemyTurnDelay >= 1.0f)
             {
                 audioSourceSoundEffects.clip = enemyMoveSound;
                 audioSourceSoundEffects.Play();
