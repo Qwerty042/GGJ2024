@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public GameObject clownPrefab;
     public GameObject soldierPrefab;
     public GameObject soldierPrefab2;
+    public GameObject tankPrefab;
     public GameObject bombPrefab;
     public GameObject ghostClownPrefab;
     public GameObject ghostSoldierPrefab;
@@ -42,12 +43,12 @@ public class GameManager : MonoBehaviour
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0},
@@ -228,7 +229,7 @@ public class GameManager : MonoBehaviour
             CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(rowIndex, columns - 1);
             if (Random.value < 0.5)
                 boardState[rowIndex, columns - 1] = 2;
-            else if (Random.value < 0.5)
+            else if (Random.value < 0.8)
                 boardState[rowIndex, columns - 1] = 3;
             else
                 boardState[rowIndex, columns - 1] = 4;
@@ -358,7 +359,7 @@ public class GameManager : MonoBehaviour
                     clowns.Add(newClown);
                 }
 
-                if ((boardState[i, j] == 2) || (boardState[i, j] == 4))
+                if (boardState[i, j] == 2)
                 {
                     GameObject newSoldier = Instantiate(soldierPrefab, spawnPosition, Quaternion.identity);
                     newSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f);
@@ -370,6 +371,13 @@ public class GameManager : MonoBehaviour
                     GameObject newSoldier = Instantiate(soldierPrefab2, spawnPosition, Quaternion.identity);
                     newSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f);
                     soldiers.Add(newSoldier);
+                }
+
+                if (boardState[i, j] == 4)
+                {
+                    GameObject newTank = Instantiate(tankPrefab, spawnPosition, Quaternion.identity);
+                    newTank.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f);
+                    soldiers.Add(newTank);
                 }
             }
         }
@@ -534,7 +542,7 @@ public class Bomb
                         {
                             GameManager.ClownDied(gridPos);
                         }
-                        else if ((GameManager.boardState[gridPos.y, gridPos.x] == 2) || (GameManager.boardState[gridPos.y, gridPos.x] == 4))
+                        else if (GameManager.boardState[gridPos.y, gridPos.x] == 2)
                         {
                             GameManager.SoldierDied(gridPos);
                         }
@@ -542,7 +550,8 @@ public class Bomb
                         {
                             GameManager.SoldierDied2(gridPos);
                         }
-                        GameManager.boardState[gridPos.y, gridPos.x] = 0;
+                        if (GameManager.boardState[gridPos.y, gridPos.x] != 4)
+                            GameManager.boardState[gridPos.y, gridPos.x] = 0;
                         explodedTiles.Add(gridPos);
                     }
                 }

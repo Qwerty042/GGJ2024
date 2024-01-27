@@ -48,8 +48,8 @@ public class OpacityManager : MonoBehaviour
                 // Calculate the new alpha value based on deltaTime and decrementFactor
                 float newAlpha = currentColor.a - (decrementFactor * Time.deltaTime);
 
-                // Ensure the new alpha value stays within [0, 1] range
-                newAlpha = Mathf.Clamp01(newAlpha);
+                // Ensure the new alpha value stays within [0, 1] range. The lower clamp bound is affected by the number of clowns there are.
+                newAlpha = Mathf.Clamp(newAlpha, (float)(0.01 * (double)(10 - ClownCounter.CountClownsAlive())), 1);
 
                 // Set the new alpha value
                 currentColor.a = newAlpha;
