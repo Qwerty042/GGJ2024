@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class ClownCounter : MonoBehaviour
 {
@@ -37,6 +38,11 @@ public class ClownCounter : MonoBehaviour
                     clownsAliveCount++;
                 }
             }
+        }
+
+        if (clownsAliveCount == 0)
+        {
+            SceneManager.LoadScene("GameOverScene");
         }
 
         return clownsAliveCount;
