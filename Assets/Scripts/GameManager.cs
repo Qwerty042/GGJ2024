@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
     public float enemyTurnDelay;
 
     public AudioClip enemyMoveSound;
+    public AudioClip explodeSound;
     AudioSource audioSourceSoundEffects;
 
     public static int[,] boardState = new int[,] // 1 is clown, 2 is soldier
@@ -188,7 +189,7 @@ public class GameManager : MonoBehaviour
     void SpawnBomb()
     {
         Vector2Int spawnPos = new Vector2Int(Random.Range(0, boardState.GetLength(0) - 1), Random.Range(0, boardState.GetLength(1) - 1));
-        bombs.Add(new Bomb(spawnPos, bombPrefab));
+        bombs.Add(new Bomb(spawnPos, bombPrefab, audioSourceSoundEffects,explodeSound));
     }
 
     void MoveOneEnemy()
@@ -365,7 +366,10 @@ public class Bomb
     private List<GameObject> bombSprites = new List<GameObject>();
     private Vector2Int pos;
     private BombState state;
+    private AudioClip explodeSound;
+    private AudioSource audioSourceExplosions;
     
+
     /*    -2-1 0 1 2
      * 
      * -2  0 0 1 0 0
@@ -374,7 +378,7 @@ public class Bomb
      *  1  0 1 1 1 0
      *  2  0 0 1 0 0
      */
-    
+
     private Vector2Int[] relativeAoePositions = new Vector2Int[]
     {
         new Vector2Int( 0, -2),
@@ -400,11 +404,13 @@ public class Bomb
         OBSOLETE,
     }
 
-    public Bomb(Vector2Int spawnPos, GameObject bombPrefab)
+    public Bomb(Vector2Int spawnPos, GameObject bombPrefab, AudioSource audioSourceSoundEffects, AudioClip boomSound)
     {
         prefab = bombPrefab;
         pos = spawnPos;
         state = BombState.INIT;
+        audioSourceExplosions = audioSourceSoundEffects;
+        explodeSound = boomSound;
     }
 
     public void Update(BoardManager boardManager)
@@ -429,6 +435,8 @@ public class Bomb
                 state = BombState.EXPLODE;
                 break;
             case BombState.EXPLODE:
+                audioSourceExplosions.clip = explodeSound;
+                audioSourceExplosions.Play();
                 List<Vector2Int> explodedTiles = new List<Vector2Int>();
                 foreach (Vector2Int relativeAoePos in relativeAoePositions)
                 {
