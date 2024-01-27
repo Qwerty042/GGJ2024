@@ -8,6 +8,8 @@ public class GameManager : MonoBehaviour
     public GameObject clownPrefab;
     public GameObject soldierPrefab;
     public GameObject bombPrefab;
+    public GameObject ghostClownPrefab;
+    public GameObject ghostSoldierPrefab;
     public BoardManager boardManager;
     public static Vector2Int currentGridPosition;
     public List<GameObject> clowns = new List<GameObject>();
