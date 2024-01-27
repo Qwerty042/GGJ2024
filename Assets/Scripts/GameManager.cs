@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     public List<GameObject> soldiers = new List<GameObject>();
     public int enemyTurnDelay;
 
+    public AudioClip enemyMoveSound;
+    AudioSource audioSourceSoundEffects;
+
     public static int[,] boardState = new int[,]
     {
         {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -42,6 +45,7 @@ public class GameManager : MonoBehaviour
 
     void Start()
     {
+        audioSourceSoundEffects = gameObject.AddComponent<AudioSource>();
         UpdateGrid();
     }
     void Update()
@@ -52,6 +56,8 @@ public class GameManager : MonoBehaviour
 
             if (enemyTurnDelay == 400)
             {
+                audioSourceSoundEffects.clip = enemyMoveSound;
+                audioSourceSoundEffects.Play();
                 EnemyTurn();
             }
         }
