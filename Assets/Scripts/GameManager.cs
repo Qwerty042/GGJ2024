@@ -191,22 +191,25 @@ public class GameManager : MonoBehaviour
             Vector3 spawnPosition = new Vector3(newX, newY, 0f);
             GameObject newGhostClown = Instantiate(ghostClownPrefab, spawnPosition, Quaternion.identity);
             newGhostClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
+            Destroy(newGhostClown, 5.0f);
         }
         foreach (Vector2Int deadSoldier in deadSoldiers)
         {
             float newX = -15.2f + (15.2f / 19f) * (deadSoldier.y + deadSoldier.x);
             float newY = 0.7f + (7.6f / 19f) * deadSoldier.x - (7.6f / 19f) * deadSoldier.y;
             Vector3 spawnPosition = new Vector3(newX, newY, 0f);
-            GameObject newSoldierClown = Instantiate(ghostSoldierPrefab, spawnPosition, Quaternion.identity);
-            newSoldierClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
+            GameObject newGhostSoldier = Instantiate(ghostSoldierPrefab, spawnPosition, Quaternion.identity);
+            newGhostSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
+            Destroy(newGhostSoldier, 5.0f);
         }
         foreach (Vector2Int deadSoldier2 in deadSoldiers2)
         {
             float newX = -15.2f + (15.2f / 19f) * (deadSoldier2.y + deadSoldier2.x);
             float newY = 0.7f + (7.6f / 19f) * deadSoldier2.x - (7.6f / 19f) * deadSoldier2.y;
             Vector3 spawnPosition = new Vector3(newX, newY, 0f);
-            GameObject newSoldierClown = Instantiate(ghostSoldierPrefab2, spawnPosition, Quaternion.identity);
-            newSoldierClown.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
+            GameObject newGhostSoldier = Instantiate(ghostSoldierPrefab2, spawnPosition, Quaternion.identity);
+            newGhostSoldier.GetComponent<SpriteRenderer>().sortingOrder = Mathf.RoundToInt(newY * -1000f) - 1;
+            Destroy(newGhostSoldier, 5.0f);
         }
         boardManager.DeathTiles(deadClowns.Concat(deadSoldiers).Concat(deadSoldiers2).ToList<Vector2Int>());
         deadClowns.Clear();
