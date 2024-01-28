@@ -7,6 +7,8 @@ public class MusicPlayer : MonoBehaviour
     public AudioClip[] backgroundMusicTracks;
     // Create 10 AudioSource components
     AudioSource[] audioSources = new AudioSource[10];
+    private string audioState = "NOT READY";
+    private float time = 0;
 
     void Start()
     {
@@ -22,13 +24,47 @@ public class MusicPlayer : MonoBehaviour
         {
             audioSources[i] = gameObject.AddComponent<AudioSource>();
             audioSources[i].clip = backgroundMusicTracks[i];
-            audioSources[i].loop = true;
-            audioSources[i].Play(); // Start playing each track
+            audioSources[i].loop = true;        
         }
+
+        
     }
 
     void Update()
     {
+        if (audioState == "READY")
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                audioSources[i].Play(); // Start playing each track
+                time += Time.deltaTime;
+                Debug.Log("Playing " + audioSources[i] + " at " + time);
+            }
+            for (int i = 1; i < 10; i++)
+            {
+                audioSources[i].timeSamples = audioSources[0].timeSamples;
+            }
+
+            audioState = "DONE";
+        }
+
+        if (audioState == "NOT READY")
+        {
+            bool allTracksReady = true;
+            for (int i = 0; i < 10; i++)
+            {
+                if (backgroundMusicTracks[i].loadState != AudioDataLoadState.Loaded)
+                {
+                    allTracksReady = false;
+                }
+            }
+            if (allTracksReady)
+            {
+                audioState = "READY";
+            }
+                    
+        }
+
         int clownCount = ClownCounter.CountClownsAlive();
         for (int i = 0; i < 10; i++)
         {

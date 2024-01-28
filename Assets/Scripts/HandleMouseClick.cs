@@ -72,7 +72,7 @@ public class HandleMouseClick : MonoBehaviour
             boardManager.SelectTile(gridPosition);
             List<Vector2Int> validTiles = GetValidTiles(gridPosition);
             boardManager.ValidTiles(validTiles);
-            Debug.Log("Character selected");
+            Debug.Log("Character selected!");
             audioSourceSoundEffects.clip = selectSound;
             audioSourceSoundEffects.Play();
 
@@ -84,7 +84,7 @@ public class HandleMouseClick : MonoBehaviour
             boardManager.SelectTile(gridPosition);
             List<Vector2Int> validTiles = GetValidTiles(gridPosition);
             boardManager.ValidTiles(validTiles);
-            Debug.Log("Character reselected");
+            Debug.Log("Character reselected!");
 
             audioSourceSoundEffects.clip = selectSound;
             audioSourceSoundEffects.Play();
