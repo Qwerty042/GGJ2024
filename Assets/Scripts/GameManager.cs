@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -164,6 +165,8 @@ public class GameManager : MonoBehaviour
             MoveOneEnemy();
         }
 
+        MoveAllTanks();
+
         for (int i = 0; i < 3 + numDeadClowns; i++)
         {
             if (Random.value < 0.7f)
@@ -291,15 +294,10 @@ public class GameManager : MonoBehaviour
             randomEnemy = GetRandomPositionOfValue(2);
             enemyType = 2;
         }
-        else if (Random.value < 0.5)
+        else
         {
             randomEnemy = GetRandomPositionOfValue(3);
             enemyType = 3;
-        }
-        else
-        {
-            randomEnemy = GetRandomPositionOfValue(4);
-            enemyType = 4;
         }
             
 
@@ -340,6 +338,35 @@ public class GameManager : MonoBehaviour
             }
         }
         
+    }
+
+    public void MoveAllTanks()
+    {
+        for (int i = 0; i < boardState.GetLength(0); i++)
+        {
+            for (int j = 0; j < boardState.GetLength(1); j++)
+            {
+                if (boardState[i, j] == 4)
+                {
+                    MoveOneTank(new Vector2Int(i, j));
+                }
+            }
+        }
+    }
+
+    public void MoveOneTank(Vector2Int gridPos)
+    {
+        boardState[gridPos.x, gridPos.y] = 0;
+        CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x, gridPos.y - 1);
+        CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x, gridPos.y - 2);
+        //CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x, gridPos.y - 3);
+        CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x + 1, gridPos.y - 1);
+        CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x + 1, gridPos.y - 2);
+        //CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x + 1, gridPos.y - 3);
+        CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x - 1, gridPos.y - 1);
+        CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x - 1, gridPos.y - 2);
+        //CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(gridPos.x - 1, gridPos.y - 3);
+        boardState[gridPos.x, gridPos.y - 2] = 4;
     }
 
     private void CheckForDeathBeforeClearingCellWhyAmIDoingThisThisWay(int x, int y)
