@@ -44,7 +44,17 @@ public class HandleMouseClick : MonoBehaviour
             {
                 if (((GameManager.boardState[j, i] == 0) && (Mathf.Abs(j - gridPosition.y) <= 2f && Mathf.Abs(i - gridPosition.x) <= 2f)))
                 {
-                    validTiles.Add(new Vector2Int(i, j));
+                    if ((GameManager.boardState[j+1, i+1] != 4) &&
+                        (GameManager.boardState[j+1, i] != 4) &&
+                        (GameManager.boardState[j+1, i-1] != 4) &&
+                        (GameManager.boardState[j-1, i+1] != 4) &&
+                        (GameManager.boardState[j-1, i] != 4) &&
+                        (GameManager.boardState[j-1, i-1] != 4) &&
+                        (GameManager.boardState[j, i+1] != 4) &&
+                        (GameManager.boardState[j, i-1] != 4))
+                    {
+                        validTiles.Add(new Vector2Int(i, j));
+                    }
                 }
             }
         }
@@ -65,7 +75,7 @@ public class HandleMouseClick : MonoBehaviour
         Debug.Log("Mouse Clicked at: " + gridPosition);
         Debug.Log(GameManager.boardState[gridPosition.y, gridPosition.x]);
 
-        if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 1) && (GameManager.gameState == "PLAYER TURN NO CHARACTER SELECTED"))
+        if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 1) && ((GameManager.gameState == "PLAYER TURN NO CHARACTER SELECTED") || (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED")))
         {
             GameManager.gameState = "PLAYER TURN CHARACTER SELECTED";
             GameManager.currentGridPosition = gridPosition;
@@ -78,18 +88,6 @@ public class HandleMouseClick : MonoBehaviour
 
 
         }
-        else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 1) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
-        {
-            GameManager.currentGridPosition = gridPosition;
-            boardManager.SelectTile(gridPosition);
-            List<Vector2Int> validTiles = GetValidTiles(gridPosition);
-            boardManager.ValidTiles(validTiles);
-            Debug.Log("Character reselected");
-
-            audioSourceSoundEffects.clip = selectSound;
-            audioSourceSoundEffects.Play();
-
-        }
         else if ((GameManager.boardState[gridPosition.y, gridPosition.x] >= 2) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
         {
             audioSourceSoundEffects.clip = failedAttackSound;
@@ -97,7 +95,8 @@ public class HandleMouseClick : MonoBehaviour
         }
         else if ((GameManager.boardState[gridPosition.y, gridPosition.x] == 0) && (GameManager.gameState == "PLAYER TURN CHARACTER SELECTED"))
         {
-            if (Mathf.Abs(GameManager.currentGridPosition.y - gridPosition.y) <= 2f && Mathf.Abs(GameManager.currentGridPosition.x - gridPosition.x) <= 2f)
+            List<Vector2Int> validTiles = GetValidTiles(GameManager.currentGridPosition);
+            if (validTiles.Contains(gridPosition))
             {
                 GameManager.boardState[gridPosition.y, gridPosition.x] = 1;
                 GameManager.boardState[GameManager.currentGridPosition.y, GameManager.currentGridPosition.x] = 0;
@@ -116,10 +115,7 @@ public class HandleMouseClick : MonoBehaviour
                     GameManager.gameState = "ENEMY TURN";
                     GameManager.movesRemaining = 3;
                 }
-                
             }
-            
-            
         }
     }
 }
